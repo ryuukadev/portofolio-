@@ -1,0 +1,217 @@
+/* Tech Stack Section - Dark Modern Minimalist Design */
+
+.tech-stack {
+  padding: 80px 24px;
+  background: #000000;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle grid pattern background */
+.tech-stack::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tech-stack-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.tech-stack-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.tech-stack-title {
+  font-family: 'Space Grotesk', 'Satoshi', 'Inter', system-ui, sans-serif;
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0;
+}
+
+/* Grid Layout */
+.tech-stack-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  justify-items: center;
+}
+
+/* Tech Card */
+.tech-card {
+  width: 100%;
+  max-width: 140px;
+  aspect-ratio: 1;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  gap: 14px;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.3s ease,
+              box-shadow 0.3s ease,
+              background 0.3s ease;
+  cursor: default;
+}
+
+.tech-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.18);
+  background: #111111;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Logo Container */
+.tech-card-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.tech-card-logo svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Tech Name */
+.tech-card-name {
+  font-family: 'Space Grotesk', 'Satoshi', 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: #e5e7eb;
+  text-align: center;
+  margin: 0;
+  line-height: 1.3;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Responsive Grid */
+@media (max-width: 1100px) {
+  .tech-stack-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+
+  .tech-card {
+    max-width: 130px;
+  }
+
+  .tech-card-logo {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+@media (max-width: 900px) {
+  .tech-stack-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .tech-card {
+    max-width: 120px;
+  }
+
+  .tech-card-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .tech-card-name {
+    font-size: 11.5px;
+  }
+}
+
+@media (max-width: 680px) {
+  .tech-stack {
+    padding: 60px 16px;
+  }
+
+  .tech-stack-header {
+    margin-bottom: 36px;
+  }
+
+  .tech-stack-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .tech-card {
+    max-width: 100%;
+    aspect-ratio: 1;
+    padding: 18px 12px;
+    gap: 12px;
+    border-radius: 16px;
+  }
+
+  .tech-card-logo {
+    width: 44px;
+    height: 44px;
+  }
+
+  .tech-card-name {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 420px) {
+  .tech-stack-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .tech-card {
+    padding: 16px 10px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+
+  .tech-card-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .tech-card-name {
+    font-size: 10px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .tech-card {
+    transition: none;
+  }
+
+  .tech-card:hover {
+    transform: none;
+  }
+}

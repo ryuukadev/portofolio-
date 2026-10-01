@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* High-contrast monochrome theme — light mode */
+    --background: 0 0% 98%;
+    --foreground: 220 20% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 30% 85%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 220 30% 95%;
+    --muted-foreground: 220 20% 55%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 0% 10%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 30% 87%;
+    --input: 220 30% 87%;
+    --ring: 0 0% 10%;
+    --scroll-offset: 80px;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 0 0% 5%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 0 0% 96%;
+    --primary-foreground: 0 0% 10%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 0 0% 30%;
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 0% 90%;
+    --destructive-foreground: 0 0% 10%;
+    --border: 0 0% 22%;
+    --input: 0 0% 22%;
+    --ring: 0 0% 96%;
+  }
+
+  .light {
+    --background: 0 0% 98%;
+    --foreground: 220 20% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 30% 85%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 220 30% 95%;
+    --muted-foreground: 220 20% 55%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 0% 10%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 30% 87%;
+    --input: 220 30% 87%;
+    --ring: 0 0% 10%;
+  }
+
+  ::selection {
+    background: hsla(0, 0%, 40%, 0.3);
+    color: hsl(var(--primary-foreground));
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsla(0, 0%, 5%, 0.5);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsla(0, 0%, 40%, 0.3);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsla(0, 0%, 50%, 0.5);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--scroll-offset);
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    @apply antialiased;
+    font-family: var(--font-inter), ui-sans, system-ui, sans-serif;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    background-image:
+      radial-gradient(circle at 20% 50%, hsla(0, 0%, 70%, 0.04) 0%, transparent 25%),
+      radial-gradient(circle at 80% 80%, hsla(0, 0%, 80%, 0.03) 0%, transparent 30%);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-space-grotesk), ui-serif, Georgia, serif;
+    font-weight: 700;
+  }
+
+  .font-display {
+    font-family: var(--font-space-grotesk), ui-serif, Georgia, serif;
+  }
+  .font-body {
+    font-family: var(--font-inter), ui-sans, system-ui, sans-serif;
+  }
+
+  /* ── VIEW TRANSITION — circular reveal dari tombol (JS animate clip-path) ── */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+  ::view-transition-old(root) {
+    z-index: 1;
+  }
+  ::view-transition-new(root) {
+    z-index: 9999;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) { animation: none; }
+  }
+}

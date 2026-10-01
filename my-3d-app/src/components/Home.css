@@ -1,0 +1,157 @@
+/* Home Page - Hero Section with Entrance Animation */
+
+.home-wrap {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  min-height: 560px;
+  background:
+    radial-gradient(900px 600px at 18% 18%, rgba(170, 59, 255, 0.14), transparent 60%),
+    radial-gradient(700px 500px at 88% 78%, rgba(255, 59, 110, 0.10), transparent 60%),
+    radial-gradient(600px 400px at 55% 0%, rgba(255, 202, 58, 0.08), transparent 60%),
+    #000000;
+  overflow: hidden;
+}
+
+/* canvas drei/fiber */
+.home-wrap canvas {
+  display: block;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.home-loaded .home-wrap canvas {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* overlay teks di atas canvas */
+.overlay {
+  position: absolute;
+  left: 32px;
+  bottom: 28px;
+  max-width: 520px;
+  text-align: left;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s,
+              transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s;
+}
+
+.home-loaded .overlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .overlay {
+    left: 16px;
+    right: 16px;
+    bottom: 20px;
+    max-width: none;
+  }
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  color: #aa3bff;
+  margin-bottom: 10px;
+}
+
+.overlay h1 {
+  margin: 0 0 10px;
+  text-align: left;
+  font-size: 42px;
+  line-height: 0.95;
+  letter-spacing: -1.2px;
+  color: #ffffff;
+}
+
+.overlay h1 span {
+  background: linear-gradient(90deg, #aa3bff, #ff3b6e 55%, #ffca3a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@media (max-width: 768px) {
+  .overlay h1 {
+    font-size: 30px;
+  }
+}
+
+.desc {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #9ca3af;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s,
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s;
+}
+
+.home-loaded .desc {
+  opacity: 0.9;
+  transform: translateY(0);
+}
+
+.desc code {
+  font-size: 12.5px;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  color: #e5e7eb;
+}
+
+.hint {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 7px 10px;
+  border-radius: 999px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s,
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s;
+}
+
+.home-loaded .hint {
+  opacity: 0.85;
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .hint {
+    top: 12px;
+    right: 12px;
+    font-size: 10px;
+    padding: 6px 9px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .home-wrap canvas,
+  .overlay,
+  .desc,
+  .hint {
+    transition: none !important;
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

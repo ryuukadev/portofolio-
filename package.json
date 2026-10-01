@@ -1,0 +1,41 @@
+{
+  "name": "ikadek-wahyu-pratama-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portofolio pribadi I Kadek Wahyu Arta Pratama - Siswa RPL Kelas 11",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
+    "@react-three/rapier": "^2.1.0",
+    "canvas-confetti": "^1.9.4",
+    "clsx": "^2.1.0",
+    "framer-motion": "^12.22.0",
+    "lucide-react": "^0.469.0",
+    "meshline": "^3.3.1",
+    "next": "15.1.2",
+    "next-themes": "^0.4.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sonner": "^1.7.2",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
+    "@types/node": "^20.16.6",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.185.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.43.0",
+    "eslint-config-next": "15.1.1",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.3"
+  }
+}

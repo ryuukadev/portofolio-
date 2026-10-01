@@ -1,0 +1,46 @@
+/* App Layout - Loading Screen Integration */
+
+#root {
+  width: 100% !important;
+  max-width: none !important;
+  border-inline: none !important;
+  min-height: 100dvh;
+  position: relative;
+}
+
+/* Ensure Home page is rendered behind loading screen */
+.home-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+/* Prevent any scrollbars during loading */
+html {
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Ensure loading screen covers everything */
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  overflow: hidden;
+  transition: transform 1s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.loading-screen.exit {
+  transform: translateY(100%);
+}
