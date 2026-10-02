@@ -182,9 +182,7 @@ export function About() {
             transition={{ ...springConfig, delay: 0.25 }}
             className="lg:col-span-2 mt-6"
           >
-            <GlassCard className="p-5 sm:p-6">
-              <GitHubStats />
-            </GlassCard>
+            <GitHubStats />
           </motion.div>
         </div>
       </div>

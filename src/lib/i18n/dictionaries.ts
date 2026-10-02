@@ -110,6 +110,16 @@ export type Dictionary = {
     reposError: string;
     chartAlt: string;
     chartFailed: string;
+    total: string;
+    streak: string;
+    bestDay: string;
+    activeDays: string;
+    onDate: string;
+    less: string;
+    more: string;
+    loading: string;
+    preview: string;
+    syncing: string;
   };
   showcase: {
     badge: string;
@@ -262,6 +272,16 @@ export const dictionaries: Record<Lang, Dictionary> = {
       reposError: "Gagal ambil repositori",
       chartAlt: "Grafik kontribusi GitHub",
       chartFailed: "Grafik kontribusi tidak dapat dimuat.",
+      total: "Total",
+      streak: "Streak",
+      bestDay: "Terbaik",
+      activeDays: "Hari aktif",
+      onDate: "kontribusi pada",
+      less: "Sedikit",
+      more: "Banyak",
+      loading: "Memuat grafik kontribusi…",
+      preview: "Pratinjau",
+      syncing: "Menyinkronkan…",
     },
     showcase: {
       badge: "KARYA",
@@ -412,6 +432,16 @@ export const dictionaries: Record<Lang, Dictionary> = {
       reposError: "Failed to fetch repositories",
       chartAlt: "GitHub contributions chart",
       chartFailed: "Contributions chart could not be loaded.",
+      total: "Total",
+      streak: "Streak",
+      bestDay: "Best day",
+      activeDays: "Active days",
+      onDate: "contributions on",
+      less: "Less",
+      more: "More",
+      loading: "Loading contributions graph…",
+      preview: "Preview",
+      syncing: "Syncing…",
     },
     showcase: {
       badge: "WORKS",

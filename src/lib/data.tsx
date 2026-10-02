@@ -1,5 +1,6 @@
 import { Project, Skill, SocialLink } from "./types";
-import { Github, Linkedin, Mail, Instagram, Music } from "lucide-react";
+import { Github, Mail, Instagram } from "lucide-react";
+import { TikTokIcon, WhatsAppIcon } from "@/components/ui/icons";
 
 export const githubUsername = "ryuukadev";
 
@@ -14,10 +15,9 @@ export const personalInfo = {
   bio: "Siswa Rekayasa Perangkat Lunak (RPL) asal Bali yang mengkhususkan diri dalam pengembangan antarmuka web modern, interaktif, rapi, dan berkarakter, dengan fokus pada frontend development dan desain UI/UX.",
   email: "dewahyuwork@gmail.com",
   github: `https://github.com/${githubUsername}`,
-  linkedin: "#",
-  instagram: "https://instagram.com/ikadekwa",
-  tiktok: "https://tiktok.com/@ikadekwa",
-  twitter: "https://twitter.com/ikadekwa",
+  instagram: "https://instagram.com/ryuukanjut",
+  tiktok: "https://www.tiktok.com/@dewahyu7_",
+  whatsapp: "https://wa.me/message/ASTIE63CL3BKN1",
 };
 
 export const projects: Project[] = [
@@ -29,8 +29,8 @@ export const projects: Project[] = [
     techStack: ["Next.js", "Tailwind CSS", "TypeScript"],
     category: "Web App",
     image: "/portofolio.png",
-    demoUrl: "#",
-    githubUrl: "#",
+    demoUrl: undefined,
+    githubUrl: undefined,
   },
 ];
 
@@ -56,9 +56,9 @@ export const socialLinks: SocialLink[] = [
     icon: <Github className="w-5 h-5" />,
   },
   {
-    name: "LinkedIn",
-    url: personalInfo.linkedin,
-    icon: <Linkedin className="w-5 h-5" />,
+    name: "WhatsApp",
+    url: personalInfo.whatsapp,
+    icon: <WhatsAppIcon className="w-5 h-5" />,
   },
   {
     name: "Instagram",
@@ -68,7 +68,7 @@ export const socialLinks: SocialLink[] = [
   {
     name: "TikTok",
     url: personalInfo.tiktok,
-    icon: <Music className="w-5 h-5" />,
+    icon: <TikTokIcon className="w-5 h-5" />,
   },
   {
     name: "Email",

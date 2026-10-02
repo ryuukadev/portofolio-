@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, useAnimationControls, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Github, Linkedin, Instagram, Mail, MapPin } from "lucide-react";
+import { ArrowUpRight, Github, Instagram, Mail, MapPin } from "lucide-react";
+import { TikTokIcon, WhatsAppIcon } from "@/components/ui/icons";
+import { SmartSocialLink } from "@/components/ui/SocialLink";
 import { personalInfo } from "@/lib/data";
 import dynamic from "next/dynamic";
 import { springConfig } from "@/lib/utils";
@@ -409,27 +411,24 @@ export function Hero() {
             >
               {[
                 { name: "GitHub", href: personalInfo.github, icon: <Github className="w-5 h-5" /> },
-                { name: "LinkedIn", href: "https://linkedin.com/in/ikadekwa", icon: <Linkedin className="w-5 h-5" /> },
-                { name: "Instagram", href: "https://instagram.com/ikadekwa", icon: <Instagram className="w-5 h-5" /> },
-              ].map((social) => (
-                <motion.a
+                { name: "WhatsApp", href: personalInfo.whatsapp, icon: <WhatsAppIcon className="w-5 h-5" /> },
+                { name: "Instagram", href: personalInfo.instagram, icon: <Instagram className="w-5 h-5" /> },
+                { name: "TikTok", href: personalInfo.tiktok, icon: <TikTokIcon className="w-5 h-5" /> },
+              ].map((social, i) => (
+                <SmartSocialLink
                   key={social.name}
                   href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileTap={{ scale: 0.9 }}
-                  whileHover={{ scale: 1.1, y: -1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                  label={social.name}
+                  index={i}
                   className={cn(
                     "w-10 h-10 grid place-items-center rounded-xl transition-colors",
                     isDark
                       ? "bg-white/5 text-neutral-300 hover:text-neutral-100 hover:bg-white/10 border border-white/10"
                       : "bg-neutral-200/50 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-300 border border-neutral-300"
                   )}
-                  aria-label={social.name}
                 >
                   {social.icon}
-                </motion.a>
+                </SmartSocialLink>
               ))}
             </motion.div>
           </div>

@@ -37,8 +37,8 @@ export function Projects() {
   const projects_i18n: Project[] = t.projectItems.map((p, i) => ({
     ...p,
     id: String(i + 1),
-    demoUrl: "#",
-    githubUrl: "#",
+    demoUrl: undefined,
+    githubUrl: undefined,
     image: (p as { image?: string }).image ?? "/project-placeholder.svg",
     category: p.category as Project["category"],
   }));
