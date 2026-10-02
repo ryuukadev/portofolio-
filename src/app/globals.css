@@ -125,15 +125,16 @@
     font-family: var(--font-inter), ui-sans, system-ui, sans-serif;
   }
 
-  /* ── GitHub heatmap: wave pop-in + shimmer ── */
+  /* ── GitHub heatmap: wave pop-in + shimmer (ringan: tanpa will-change
+     agar 371 sel tidak makan layer memori & tidak jank di HP) ── */
   @keyframes gh-cell-pop {
     0% { opacity: 0; transform: scale(0.3); }
-    60% { opacity: 1; transform: scale(1.18); }
+    60% { opacity: 1; transform: scale(1.12); }
     100% { opacity: 1; transform: scale(1); }
   }
   .gh-cell {
-    animation: gh-cell-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-    will-change: transform, opacity;
+    animation: gh-cell-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    backface-visibility: hidden;
   }
   @keyframes gh-shimmer-slide {
     from { transform: translateX(-100%); }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef, type ReactNode } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback, memo, type ReactNode } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import {
   Github,
@@ -99,11 +99,52 @@ function cellClass(isDark: boolean, level: Day["level"]) {
   }
 }
 
-/** Angka tween halus 0 → target (easeOutExpo), hormati reduced-motion. */
+/** Sel heatmap tunggal — dimemo supaya update data cuma re-render sel yang
+    warnanya berubah, bukan 371 sel sekaligus (itu yang bikin jank/stuck). */
+const HeatCell = memo(function HeatCell({
+  day,
+  isDark,
+  labelOnDate,
+  fmtDate,
+  playWave,
+  revealed,
+  animDelay,
+  onHover,
+}: {
+  day: Day;
+  isDark: boolean;
+  labelOnDate: string;
+  fmtDate: (iso: string) => string;
+  playWave: boolean;
+  revealed: boolean;
+  animDelay?: string;
+  onHover: (d: Day | null) => void;
+}) {
+  return (
+    <div
+      onMouseEnter={() => onHover(day)}
+      onMouseLeave={() => onHover(null)}
+      onFocus={() => onHover(day)}
+      onBlur={() => onHover(null)}
+      tabIndex={0}
+      role="img"
+      aria-label={`${day.count} ${labelOnDate} ${fmtDate(day.date)}`}
+      title={`${day.count} · ${fmtDate(day.date)}`}
+      style={playWave ? { animationDelay: animDelay } : undefined}
+      className={cn(
+        playWave ? "gh-cell" : revealed ? "" : "opacity-0",
+        "h-[11px] w-[11px] sm:h-[12px] sm:w-[12px] rounded-[3.5px] cursor-pointer outline-none transition-[transform,background-color,box-shadow] duration-200 ease-out hover:scale-[1.45] hover:z-10 hover:ring-1 focus-visible:scale-[1.45] focus-visible:ring-1",
+        cellClass(isDark, day.level),
+        isDark ? "hover:ring-white focus-visible:ring-white" : "hover:ring-black focus-visible:ring-black"
+      )}
+    />
+  );
+});
 function useCountUp(target: number, start: boolean, duration = 900) {
   const [val, setVal] = useState(0);
   const fromRef = useRef(0);
   const valRef = useRef(0);
+  const lastPaintRef = useRef(0);
   const reduce = useReducedMotion();
   useEffect(() => {
     if (!start) return;
@@ -124,8 +165,14 @@ function useCountUp(target: number, start: boolean, duration = 900) {
       const p = Math.min((now - t0) / duration, 1);
       const e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
       const v = Math.round(from + (target - from) * e);
-      valRef.current = v;
-      setVal(v);
+      // Throttle setState ke ~30fps — 6 counter × 60fps itu yang bikin jank
+      if (v !== valRef.current && (p === 1 || now - lastPaintRef.current > 32)) {
+        lastPaintRef.current = now;
+        valRef.current = v;
+        setVal(v);
+      } else {
+        valRef.current = v;
+      }
       if (p < 1) raf = requestAnimationFrame(tick);
       else fromRef.current = target;
     };
@@ -142,9 +189,41 @@ export function GitHubStats() {
   const { resolvedTheme } = useTheme();
   const { t, lang } = useLanguage();
   const [mounted, setMounted] = useState(false);
-  // Paint pertama langsung ada isi (fallback), bukan skeleton kosong
-  const [days, setDays] = useState<Day[]>(() => seededFallback());
-  const [status, setStatus] = useState<Status>("loading");
+  // Paint pertama: baca cache SYNC saat render (bukan di effect) supaya tidak
+  // ada frame "fallback → data asli" yang bikin heatmap kelihatan berubah kasar
+  const [days, setDays] = useState<Day[]>(() => {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as { days?: Day[]; ts?: number };
+        if (
+          Array.isArray(parsed.days) &&
+          parsed.days.length > 0 &&
+          Date.now() - (parsed.ts ?? 0) < CACHE_TTL
+        ) {
+          return parsed.days;
+        }
+      }
+    } catch {
+      /* abaikan */
+    }
+    return seededFallback();
+  });
+  // Kalau paint pertama sudah dari cache → langsung "live", tidak lewat "loading"
+  const [status, setStatus] = useState<Status>(() => {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as { ts?: number; days?: Day[] };
+        if (Array.isArray(parsed.days) && Date.now() - (parsed.ts ?? 0) < CACHE_TTL) {
+          return "live";
+        }
+      }
+    } catch {
+      /* abaikan */
+    }
+    return "loading";
+  });
   const [hover, setHover] = useState<Day | null>(null);
   // Profil GitHub (avatar, nama, followers) — diambil sekali, gagal pun tidak error
   const [profile, setProfile] = useState<{
@@ -156,14 +235,17 @@ export function GitHubStats() {
   useEffect(() => setMounted(true), []);
   const isDark = mounted ? resolvedTheme === "dark" : true;
 
-  // Wave animasi hanya dimainkan sekali, saat grid masuk viewport
+  // Wave animasi hanya dimainkan sekali, saat grid masuk viewport.
+  // Sengaja TIDAK tergantung status fetch: kalau data live tiba di tengah
+  // wave, sel cuma morph warna via transition-colors (halus) dan wave lanjut
+  // sampai selesai — memutus class gh-cell di tengah jalan justru bikin kedip.
   const gridRef = useRef<HTMLDivElement>(null);
   const inView = useInView(gridRef, { once: true, margin: "-60px" });
   const reduceMotion = useReducedMotion();
   const [played, setPlayed] = useState(false);
   useEffect(() => {
     if (!inView || reduceMotion || played) return;
-    const timer = setTimeout(() => setPlayed(true), 1600);
+    const timer = setTimeout(() => setPlayed(true), 1200);
     return () => clearTimeout(timer);
   }, [inView, reduceMotion, played]);
   const playWave = inView && !reduceMotion && !played;
@@ -175,7 +257,9 @@ export function GitHubStats() {
     const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT);
     const hasReal = { current: false };
 
-    // 1. Cache dulu — kunjungan ulang langsung data asli, tanpa nunggu network
+    // 1. Cache sudah dibaca SYNC di lazy useState di atas — paint pertama
+    //    langsung data asli. Di sini cukup tandai hasReal untuk fallback status
+    //    (tanpa setState ulang supaya tidak re-render ganda).
     try {
       const rawCache = localStorage.getItem(CACHE_KEY);
       if (rawCache) {
@@ -186,15 +270,17 @@ export function GitHubStats() {
           Date.now() - (parsed.ts ?? 0) < CACHE_TTL
         ) {
           hasReal.current = true;
-          if (!cancelled) setDays(parsed.days);
         }
       }
     } catch {
       /* abaikan cache rusak */
     }
 
-    // 2. Revalidasi di background — warna morph halus via transition-colors
-    (async () => {
+    // 2. Revalidasi di background — jadwalkan setelah browser idle supaya tidak
+    //    berebut thread dengan paint awal (ini yang bikin "stuck" pas masuk).
+    //    Hasilnya di-diff: hanya setState kalau data benar-benar beda, jadi
+    //    heatmap tidak "berubah kasar" kalau datanya sama.
+    const runFetch = async () => {
       try {
         const res = await fetch(
           `https://github-contributions-api.jogruber.de/v4/${githubUsername}?y=last`,
@@ -224,8 +310,19 @@ export function GitHubStats() {
           };
         });
         if (!cancelled) {
+          // Diff ringan: kalau identik dengan yang tampil, jangan setState
+          // (menghindari 371 re-render + angka count-up ngulang dari 0)
+          setDays((prev) => {
+            if (
+              prev.length === parsed.length &&
+              prev.every((d, i) => d.count === parsed[i].count && d.date === parsed[i].date)
+            ) {
+              hasReal.current = true;
+              return prev;
+            }
+            return parsed;
+          });
           hasReal.current = true;
-          setDays(parsed);
           setStatus("live");
           try {
             localStorage.setItem(CACHE_KEY, JSON.stringify({ days: parsed, ts: Date.now() }));
@@ -238,10 +335,30 @@ export function GitHubStats() {
       } finally {
         clearTimeout(timer);
       }
-    })();
+    };
+    // requestIdleCallback kalau ada (idle browser), fallback timeout 600ms
+    let idleId: number | undefined;
+    const w = window as unknown as {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (typeof w.requestIdleCallback === "function") {
+      idleId = w.requestIdleCallback(() => runFetch(), { timeout: 1500 });
+    } else {
+      idleId = window.setTimeout(() => runFetch(), 600) as unknown as number;
+    }
     return () => {
       cancelled = true;
       clearTimeout(timer);
+      if (typeof w.cancelIdleCallback === "function" && typeof idleId === "number") {
+        try {
+          w.cancelIdleCallback(idleId);
+        } catch {
+          /* abaikan */
+        }
+      } else {
+        clearTimeout(idleId);
+      }
       ctrl.abort();
     };
   }, []);
@@ -334,14 +451,19 @@ export function GitHubStats() {
     return labels;
   }, [weeks, lang]);
 
-  const fmtDate = (iso: string) =>
-    new Date(iso + "T00:00:00").toLocaleDateString(lang === "id" ? "id-ID" : "en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+  const fmtDate = useCallback(
+    (iso: string) =>
+      new Date(iso + "T00:00:00").toLocaleDateString(lang === "id" ? "id-ID" : "en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }),
+    [lang]
+  );
 
   const locale = lang === "id" ? "id-ID" : "en-US";
+  // Stabil untuk HeatCell yang dimemo — tanpa ini tiap hover bikin 371 sel re-render
+  const handleCellHover = useCallback((d: Day | null) => setHover(d), []);
   const statCards: { icon: ReactNode; value: string; label: string; hot?: boolean }[] = [
     {
       icon: <Sparkles className="w-3.5 h-3.5" />,
@@ -630,23 +752,16 @@ export function GitHubStats() {
               {weeks.map((week, wi) => (
                 <div key={wi} className="flex flex-col gap-[3px]">
                   {week.map((day, di) => (
-                    <div
+                    <HeatCell
                       key={`${day.date}-${di}`}
-                      onMouseEnter={() => setHover(day)}
-                      onMouseLeave={() => setHover(null)}
-                      onFocus={() => setHover(day)}
-                      onBlur={() => setHover(null)}
-                      tabIndex={0}
-                      role="img"
-                      aria-label={`${day.count} ${t.github.onDate} ${fmtDate(day.date)}`}
-                      title={`${day.count} · ${fmtDate(day.date)}`}
-                      style={playWave ? { animationDelay: `${Math.min(wi * 14 + di * 6, 650)}ms` } : undefined}
-                      className={cn(
-                        playWave ? "gh-cell" : revealed ? "" : "opacity-0",
-                        "h-[11px] w-[11px] sm:h-[12px] sm:w-[12px] rounded-[3.5px] cursor-pointer outline-none transition-[transform,background-color,box-shadow] duration-200 ease-out hover:scale-[1.45] hover:z-10 hover:ring-1 focus-visible:scale-[1.45] focus-visible:ring-1",
-                        cellClass(isDark, day.level),
-                        isDark ? "hover:ring-white focus-visible:ring-white" : "hover:ring-black focus-visible:ring-black"
-                      )}
+                      day={day}
+                      isDark={isDark}
+                      labelOnDate={t.github.onDate}
+                      fmtDate={fmtDate}
+                      playWave={playWave}
+                      revealed={revealed}
+                      animDelay={`${Math.min(wi * 14 + di * 6, 650)}ms`}
+                      onHover={handleCellHover}
                     />
                   ))}
                 </div>

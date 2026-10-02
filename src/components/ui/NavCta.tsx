@@ -47,8 +47,8 @@ export function NavCta({ label, isDark }: { label: string; isDark: boolean }) {
           {/* kilau menyapu berkala */}
           <motion.span
             aria-hidden
-            initial={{ xPercent: -160 }}
-            animate={{ xPercent: 320 }}
+            initial={{ x: "-160%" }}
+            animate={{ x: "320%" }}
             transition={{
               duration: 1.1,
               repeat: Infinity,

@@ -18,7 +18,9 @@ export function WelcomeOverlay() {
 
   useEffect(() => {
     if (!show) return;
-    const duration = 2600;
+    // Total ~1,6 dtk: progress cepat 1,1 dtk + jeda baca 0,5 dtk.
+    // Versi lama 2,6 dtk + 3,8 dtk = 6,4 dtk body di-lock (itu yang "stuck").
+    const duration = 1100;
     const start = performance.now();
     let raf = 0;
     const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -31,7 +33,7 @@ export function WelcomeOverlay() {
       else setTimeout(() => {
         window.dispatchEvent(new CustomEvent("welcome:done"));
         setShow(false);
-      }, 3800);
+      }, 500);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);

@@ -121,8 +121,8 @@ export function WLogo({ isDark }: { isDark: boolean }) {
           {/* kilau menyapu sekali saat intro */}
           <motion.span
             aria-hidden
-            initial={reduce ? false : { xPercent: -160, skewX: -20 }}
-            animate={{ xPercent: 320, skewX: -20 }}
+            initial={reduce ? false : { x: "-160%", skewX: -20 }}
+            animate={{ x: "320%", skewX: -20 }}
             transition={{ duration: 0.9, delay: 0.9, ease: "easeInOut" }}
             className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-black/15 to-transparent dark:via-white/40"
           />
