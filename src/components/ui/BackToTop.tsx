@@ -46,7 +46,7 @@ export function BackToTop() {
       <button
         onClick={handleRestore}
         className={cn(
-          "fixed bottom-6 right-6 z-50 w-9 h-9 grid place-items-center rounded-full border backdrop-blur transition-all",
+          "fixed bottom-6 right-6 z-50 w-11 h-11 grid place-items-center rounded-full border backdrop-blur transition-all",
           isDark
             ? "bg-white/5 border-white/10 text-neutral-400 hover:text-white hover:bg-white/10"
             : "bg-white border-neutral-300 text-neutral-500 hover:text-neutral-800 hover:bg-neutral-100 shadow-sm"
@@ -54,7 +54,7 @@ export function BackToTop() {
         aria-label="Tampilkan tombol ke atas"
         title="Tampilkan tombol ke atas"
       >
-        <ArrowUp className="w-4 h-4" />
+        <ArrowUp className="w-5 h-5" />
       </button>
     );
   }
@@ -109,7 +109,7 @@ export function BackToTop() {
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.05 }}
             className={cn(
-              "hidden sm:grid place-items-center w-9 h-9 rounded-full border backdrop-blur transition-all",
+              "hidden sm:grid place-items-center w-11 h-11 rounded-full border backdrop-blur transition-all",
               isDark
                 ? "bg-white/5 border-white/10 text-neutral-400 hover:text-white hover:bg-white/10"
                 : "bg-white border-neutral-300 text-neutral-500 hover:text-neutral-800 hover:bg-neutral-100 shadow-sm"
@@ -117,7 +117,7 @@ export function BackToTop() {
             aria-label="Sembunyikan tombol ke atas"
             title="Sembunyikan"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </motion.button>
         </motion.div>
       )}

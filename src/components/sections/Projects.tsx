@@ -73,7 +73,7 @@ export function Projects() {
         </div>
 
         {/* Filter */}
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="flex flex-nowrap overflow-x-auto gap-2 mb-8 pb-2 -mx-1 px-1 snap-x snap-mandatory scrollbar-hide">
           {categories.map((c) => {
             const active = activeCategory === c;
             return (
@@ -84,7 +84,7 @@ export function Projects() {
                 whileHover={{ scale: 1.03, y: -1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 18 }}
                 className={cn(
-                  "px-4 py-2 text-[12px] font-black tracking-widest skew-x-[-8deg] border",
+                  "snap-start shrink-0 px-4 py-2.5 text-[12px] font-black tracking-widest skew-x-[-8deg] border min-h-[44px] touch-manipulation",
                   active
                     ? "bg-neutral-300 text-neutral-800 border-neutral-400 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]"
                     : isDark

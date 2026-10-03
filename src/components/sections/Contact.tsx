@@ -116,7 +116,7 @@ export function Contact() {
           </span>
         </div>
 
-        <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-6">
           {/* Info — static cards */}
           <div className="space-y-4">
             <h3 className={cn("font-black tracking-tighter text-[22px] leading-none", isDark ? "text-white" : "text-neutral-800")}>
@@ -184,11 +184,11 @@ export function Contact() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                <motion.form
-                  onSubmit={handleSubmit}
-                  className="space-y-4"
-                >
-                  <div className="space-y-1.5">
+<motion.form
+                   onSubmit={handleSubmit}
+                   className="space-y-3.5 sm:space-y-4"
+                 >
+                   <div className="space-y-1.5">
                     <label className={cn("text-[11px] font-black tracking-widest flex items-center gap-1.5", isDark ? "text-white/60" : "text-neutral-500")}>
                       <User className="w-3.5 h-3.5" /> {t.contact.formName}
                     </label>

@@ -180,7 +180,7 @@ export function Hero() {
       />
 
       <div className="relative max-w-[1280px] mx-auto px-3 xs:px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-[1.18fr_0.82fr] gap-6 lg:gap-8 items-start py-4 xs:py-5 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.18fr_0.82fr] gap-6 lg:gap-8 items-start py-4 xs:py-5 sm:py-8">
           {/* Left Content */}
           <div>
             {/* Badge */}
@@ -214,66 +214,66 @@ export function Hero() {
             </motion.div>
 
             {/* Heading */}
-            <motion.h1
-              style={{ y: yHeading }}
-              className={cn("font-black tracking-tighter leading-[0.92] mb-2", isDark ? "text-white" : "text-black")}
-              initial="hidden"
-              animate={textControls}
-              variants={{
-                hidden: { opacity: 0 },
-                visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } },
-              }}
-            >
-              <motion.span
-                className="block text-[30px] xs:text-[36px] sm:text-[44px] md:text-[52px] lg:text-[58px]"
-                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-                transition={{ ...springConfig, delay: 0.3 }}
-              >
-                {t.hero.greeting}
-              </motion.span>
+<motion.h1
+               style={{ y: yHeading }}
+               className={cn("font-black tracking-tighter leading-[0.92] mb-2 break-words", isDark ? "text-white" : "text-black")}
+               initial="hidden"
+               animate={textControls}
+               variants={{
+                 hidden: { opacity: 0 },
+                 visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } },
+               }}
+             >
+               <motion.span
+                 className="block text-[30px] xs:text-[36px] sm:text-[44px] md:text-[52px] lg:text-[58px]"
+                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+                 transition={{ ...springConfig, delay: 0.3 }}
+               >
+                 {t.hero.greeting}
+               </motion.span>
 
-              {/* DEWAHYUDEV — nyambung, editorial aesthetic */}
-              <motion.span
-                className={cn(
-                  "mt-1 relative inline-flex flex-wrap items-baseline gap-0 font-black leading-none",
-                  "text-[32px] xs:text-[38px] sm:text-[46px] md:text-[54px] lg:text-[60px]"
-                )}
-              >
-                <span className="relative inline-block">
-                  <span
-                    aria-hidden
-                    className="absolute inset-0 translate-x-[2px] translate-y-[2px] select-none pointer-events-none hidden sm:block"
-                    style={{
-                      color: "transparent",
-                      WebkitTextStroke: isDark ? "1px rgba(255,255,255,0.11)" : "1px rgba(0,0,0,0.08)",
-                    }}
-                  >
-                    DEWAHYU
-                  </span>
-                  <span className={cn("relative tracking-[-0.06em]", isDark ? "text-white" : "text-neutral-900")}>DEWAHYU</span>
-                </span>
+               {/* DEWAHYUDEV — nyambung, editorial aesthetic */}
+               <motion.span
+                 className={cn(
+                   "mt-1 relative inline-flex flex-wrap items-baseline gap-0 font-black leading-none break-words",
+                   "text-[32px] xs:text-[38px] sm:text-[46px] md:text-[54px] lg:text-[60px]"
+                 )}
+               >
+                 <span className="relative inline-block">
+                   <span
+                     aria-hidden
+                     className="absolute inset-0 translate-x-[2px] translate-y-[2px] select-none pointer-events-none hidden sm:block"
+                     style={{
+                       color: "transparent",
+                       WebkitTextStroke: isDark ? "1px rgba(255,255,255,0.11)" : "1px rgba(0,0,0,0.08)",
+                     }}
+                   >
+                     DEWAHYU
+                   </span>
+                   <span className={cn("relative tracking-[-0.06em] break-words", isDark ? "text-white" : "text-neutral-900")}>DEWAHYU</span>
+                 </span>
 
-                <motion.span
-                  whileHover={{ y: -2, rotate: -0.7 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                  className={cn(
-                    "relative skew-x-[-12deg] -ml-1 px-2.5 sm:px-3.5 sm:px-4 py-1 sm:py-1.5 shadow-[6px_6px_0px_rgba(0,0,0,0.2)] border",
-                    isDark ? "bg-white border-white" : "bg-neutral-900 border-neutral-900"
-                  )}
-                >
-                  {/* inner top highlight */}
-                  <span className="pointer-events-none absolute inset-x-2 top-0 h-px bg-white/30 hidden sm:block" />
-                  <span className={cn("skew-x-[12deg] inline-block tracking-[-0.03em]", isDark ? "text-black" : "text-white")}>DEV</span>
-                </motion.span>
+                 <motion.span
+                   whileHover={{ y: -2, rotate: -0.7 }}
+                   transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                   className={cn(
+                     "relative skew-x-[-12deg] -ml-1 px-2.5 sm:px-3.5 sm:px-4 py-1 sm:py-1.5 shadow-[6px_6px_0px_rgba(0,0,0,0.2)] border",
+                     isDark ? "bg-white border-white" : "bg-neutral-900 border-neutral-900"
+                   )}
+                 >
+                   {/* inner top highlight */}
+                   <span className="pointer-events-none absolute inset-x-2 top-0 h-px bg-white/30 hidden sm:block" />
+                   <span className={cn("skew-x-[12deg] inline-block tracking-[-0.03em]", isDark ? "text-black" : "text-white")}>DEV</span>
+                 </motion.span>
 
-                <span
-                  className={cn(
-                    "pointer-events-none absolute -bottom-2 left-0 h-px w-[88%]",
-                    isDark ? "bg-gradient-to-r from-white/40 via-white/10 to-transparent" : "bg-gradient-to-r from-black/20 via-black/8 to-transparent"
-                  )}
-                />
-              </motion.span>
-            </motion.h1>
+                 <span
+                   className={cn(
+                     "pointer-events-none absolute -bottom-2 left-0 h-px w-[88%]",
+                     isDark ? "bg-gradient-to-r from-white/40 via-white/10 to-transparent" : "bg-gradient-to-r from-black/20 via-black/8 to-transparent"
+                   )}
+                 />
+               </motion.span>
+             </motion.h1>
 
             <motion.p
               className={cn("mt-2 text-[11px] sm:text-[12px] font-black tracking-[0.28em]", isDark ? "text-white/60" : "text-black/50")}
@@ -343,36 +343,36 @@ export function Hero() {
             </motion.div>
 
             {/* CTA Buttons */}
-            <motion.div
-              className="mt-5 sm:mt-7 flex flex-wrap gap-2.5 sm:gap-3"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...springConfig, delay: 0.8 }}
-            >
-              <motion.a
-                href="#kontak"
-                whileTap={{ scale: 0.96 }}
-                whileHover={{ scale: 1.02, y: -1 }}
-                transition={{ type: "spring", stiffness: 400, damping: 18 }}
-                className={cn("skew-x-[-8deg] px-4 xs:px-5 sm:px-6 py-2.5 sm:py-3.5 inline-flex items-center gap-2 shadow-[4px_4px_0px_black] sm:shadow-[5px_5px_0px_black]", isDark ? "bg-white" : "bg-black")}
-              >
-                <span className={cn("skew-x-[8deg] inline-flex items-center gap-2 text-[11px] xs:text-[12px] sm:text-[13px] font-black tracking-widest", isDark ? "text-black" : "text-white")}>
-                  {t.hero.ctaContact} <ArrowUpRight className="w-4 h-4" />
-                </span>
-              </motion.a>
+<motion.div
+               className="mt-5 sm:mt-7 flex flex-col sm:flex-row gap-2.5 sm:gap-3"
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ ...springConfig, delay: 0.8 }}
+             >
+               <motion.a
+                 href="#kontak"
+                 whileTap={{ scale: 0.96 }}
+                 whileHover={{ scale: 1.02, y: -1 }}
+                 transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                 className={cn("skew-x-[-8deg] px-4 xs:px-5 sm:px-6 py-2.5 sm:py-3.5 inline-flex items-center justify-center gap-2 shadow-[4px_4px_0px_black] sm:shadow-[5px_5px_0px_black] w-full sm:w-auto", isDark ? "bg-white" : "bg-black")}
+               >
+                 <span className={cn("skew-x-[8deg] inline-flex items-center gap-2 text-[11px] xs:text-[12px] sm:text-[13px] font-black tracking-widest", isDark ? "text-black" : "text-white")}>
+                   {t.hero.ctaContact} <ArrowUpRight className="w-4 h-4" />
+                 </span>
+               </motion.a>
 
-              <motion.a
-                href="#karya"
-                whileTap={{ scale: 0.96 }}
-                whileHover={{ scale: 1.02, y: -1 }}
-                transition={{ type: "spring", stiffness: 400, damping: 18 }}
-                className={cn("skew-x-[-8deg] px-4 xs:px-5 sm:px-6 py-2.5 sm:py-3.5 shadow-[4px_4px_0px_rgba(0,0,0,0.15)] sm:shadow-[5px_5px_0px_rgba(0,0,0,0.15)] inline-flex items-center gap-2 border", isDark ? "bg-white border-white/5" : "bg-black border-black/10")}
-              >
-                <span className={cn("skew-x-[8deg] inline-flex items-center gap-2 text-[11px] xs:text-[12px] sm:text-[13px] font-black tracking-widest", isDark ? "text-black" : "text-white")}>
-                  {t.hero.ctaProjects}
-                </span>
-              </motion.a>
-            </motion.div>
+               <motion.a
+                 href="#karya"
+                 whileTap={{ scale: 0.96 }}
+                 whileHover={{ scale: 1.02, y: -1 }}
+                 transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                 className={cn("skew-x-[-8deg] px-4 xs:px-5 sm:px-6 py-2.5 sm:py-3.5 shadow-[4px_4px_0px_rgba(0,0,0,0.15)] sm:shadow-[5px_5px_0px_rgba(0,0,0,0.15)] inline-flex items-center justify-center gap-2 border w-full sm:w-auto", isDark ? "bg-white border-white/5" : "bg-black border-black/10")}
+               >
+                 <span className={cn("skew-x-[8deg] inline-flex items-center gap-2 text-[11px] xs:text-[12px] sm:text-[13px] font-black tracking-widest", isDark ? "text-black" : "text-white")}>
+                   {t.hero.ctaProjects}
+                 </span>
+               </motion.a>
+             </motion.div>
 
             {/* Tech Stack */}
             <motion.div
@@ -454,7 +454,7 @@ export function Hero() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ ...springConfig, delay: 0.45 }}
           >
-            <div className="w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[440px] h-[400px] xs:h-[460px] sm:h-[520px] origin-center">
+            <div className="w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[440px] h-[340px] xs:h-[380px] sm:h-[440px] max-h-[55vh] origin-center">
               <Lanyard
                 position={[0, 0, 12]}
                 gravity={[0, -40, 0]}

@@ -53,7 +53,7 @@ export function ContactDockKeyboard() {
         </motion.div>
 
         {/* Socials */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {socials.map((social) => (
             <motion.a
               key={social.name}
@@ -63,7 +63,7 @@ export function ContactDockKeyboard() {
               aria-label={social.name}
               title={social.name}
               onClick={(e) => handleSmartClick(e, social.href)}
-              className="relative flex items-center justify-center w-20 h-16 sm:w-24 sm:h-[4.5rem]"
+              className="relative flex items-center justify-center w-14 h-12 sm:w-20 sm:h-16"
               whileHover={{ scale: 1.08, y: -4 }}
               whileTap={{ scale: 0.82, rotate: -4 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}

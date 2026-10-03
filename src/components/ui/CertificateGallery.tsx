@@ -132,17 +132,17 @@ export function CertificateGallery() {
             exit={{ opacity: 0 }}
             onClick={() => setSelected(null)}
           >
-            <motion.div
-              className={cn(
-                "relative w-full max-w-3xl max-h-[88vh] rounded-[20px] overflow-hidden border shadow-[0_24px_80px_rgba(0,0,0,0.5)] flex flex-col",
-                isDark ? "bg-neutral-900 border-white/10" : "bg-white border-neutral-200"
-              )}
-              initial={{ scale: 0.92, y: 16, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.96, y: 8, opacity: 0 }}
-              transition={{ ...springConfig }}
-              onClick={(e) => e.stopPropagation()}
-            >
+<motion.div
+               className={cn(
+                 "relative w-full max-w-3xl max-h-[92vh] rounded-[20px] overflow-hidden border shadow-[0_24px_80px_rgba(0,0,0,0.5)] flex flex-col",
+                 isDark ? "bg-neutral-900 border-white/10" : "bg-white border-neutral-200"
+               )}
+               initial={{ scale: 0.92, y: 16, opacity: 0 }}
+               animate={{ scale: 1, y: 0, opacity: 1 }}
+               exit={{ scale: 0.96, y: 8, opacity: 0 }}
+               transition={{ ...springConfig }}
+               onClick={(e) => e.stopPropagation()}
+             >
               {/* header */}
               <div className="flex items-center gap-3 px-5 sm:px-6 py-4 border-b shrink-0"
                 style={{ borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }}>

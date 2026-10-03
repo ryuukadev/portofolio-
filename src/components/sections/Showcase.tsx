@@ -130,18 +130,18 @@ export function Showcase() {
         </div>
 
         {/* Tab bar — pil + sliding indicator */}
-        <div className={cn("flex items-center gap-1.5 p-1.5 rounded-2xl border w-fit max-w-full overflow-x-auto scrollbar-none", isDark ? "bg-white/[0.04] border-white/10" : "bg-white border-zinc-200 shadow-sm")}>
+        <div className={cn("flex items-center gap-1.5 p-1.5 rounded-2xl border w-fit max-w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory", isDark ? "bg-white/[0.04] border-white/10" : "bg-white border-zinc-200 shadow-sm")}>
           {tabs.map((tb) => {
             const active = tab === tb.id;
             return (
-              <button
-                key={tb.id}
-                onClick={() => switchTab(tb.id)}
-                className={cn(
-                  "relative px-4 sm:px-5 py-2.5 rounded-xl text-[11px] sm:text-[12px] font-black tracking-[0.14em] whitespace-nowrap transition-colors",
-                  active ? (isDark ? "text-black" : "text-white") : isDark ? "text-white/60 hover:text-white" : "text-zinc-500 hover:text-zinc-800"
-                )}
-              >
+<button
+                 key={tb.id}
+                 onClick={() => switchTab(tb.id)}
+                 className={cn(
+                   "relative snap-start px-4 sm:px-5 py-2.5 rounded-xl text-[11px] sm:text-[12px] font-black tracking-[0.14em] whitespace-nowrap transition-colors min-h-[44px] touch-manipulation",
+                   active ? (isDark ? "text-black" : "text-white") : isDark ? "text-white/60 hover:text-white" : "text-zinc-500 hover:text-zinc-800"
+                 )}
+               >
                 {active && (
                   <motion.span
                     layoutId="showcase-tab"
