@@ -3,12 +3,18 @@
   z-index: 0;
   width: 100%;
   height: 100%;
+  max-width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   transform: scale(1);
   transform-origin: center;
-  overflow: visible;
+  /* visible -> hidden: di mobile canvas 3D yang overflow bikin scroll
+     horizontal + menutupi teks di bawahnya. touch-action pan-y supaya
+     swipe vertikal tetap scroll halaman, bukan ke-trap di canvas. */
+  overflow: hidden;
+  touch-action: pan-y;
+  overscroll-behavior-y: contain;
 }
 .lanyard-wrapper canvas {
   display: block;

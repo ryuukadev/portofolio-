@@ -82,7 +82,7 @@ export function Hero() {
     <section
       id="beranda"
       ref={containerRef}
-      className="relative pt-[72px] sm:pt-[84px] pb-10 sm:pb-16 overflow-visible"
+      className="relative pt-[72px] sm:pt-[84px] pb-10 sm:pb-16 overflow-clip max-w-[100vw]"
     >
       {/* Running marquee — aesthetic behind BG */}
       <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none select-none" aria-hidden="true">
@@ -174,13 +174,13 @@ export function Hero() {
 
       {/* Ambient glow — monochrome */}
       <motion.div
-        className={cn("absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[80px] -z-10", isDark ? "bg-white/[0.04]" : "bg-black/[0.06]")}
+        className={cn("absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] sm:w-[600px] sm:h-[600px] rounded-full blur-[80px] -z-10 max-w-[100vw]", isDark ? "bg-white/[0.04]" : "bg-black/[0.06]")}
         animate={{ scale: [1, 1.05, 1], opacity: [0.1, 0.15, 0.1] }}
         transition={{ duration: 6, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
       />
 
-      <div className="relative max-w-[1280px] mx-auto px-3 xs:px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.18fr_0.82fr] gap-6 lg:gap-8 items-start py-4 xs:py-5 sm:py-8">
+      <div className="relative max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 min-w-0">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.18fr_0.82fr] gap-6 lg:gap-8 items-start py-4 sm:py-8 min-w-0">
           {/* Left Content */}
           <div>
             {/* Badge */}
@@ -257,7 +257,7 @@ export function Hero() {
                    whileHover={{ y: -2, rotate: -0.7 }}
                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
                    className={cn(
-                     "relative skew-x-[-12deg] -ml-1 px-2.5 sm:px-3.5 sm:px-4 py-1 sm:py-1.5 shadow-[6px_6px_0px_rgba(0,0,0,0.2)] border",
+                     "relative skew-x-[-12deg] ml-1 xs:-ml-1 px-2.5 sm:px-4 py-1 sm:py-1.5 shadow-[6px_6px_0px_rgba(0,0,0,0.2)] border",
                      isDark ? "bg-white border-white" : "bg-neutral-900 border-neutral-900"
                    )}
                  >
@@ -325,7 +325,7 @@ export function Hero() {
               transition={{ ...springConfig, delay: 0.7 }}
             >
               <motion.span
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 min-w-0 break-all"
                 whileHover={{ x: 3 }}
                 transition={{ type: "spring", stiffness: 400, damping: 18 }}
               >
@@ -449,12 +449,12 @@ export function Hero() {
           {/* Mobile / tablet — physics juga */}
           <motion.div
             style={{ y: yAvatar }}
-            className="lg:hidden w-full flex flex-col items-center mt-2 sm:mt-4"
+            className="lg:hidden w-full min-w-0 flex flex-col items-center mt-2 sm:mt-4 overflow-hidden"
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ ...springConfig, delay: 0.45 }}
           >
-            <div className="w-full max-w-[340px] xs:max-w-[380px] sm:max-w-[440px] h-[340px] xs:h-[380px] sm:h-[440px] max-h-[55vh] origin-center">
+            <div className="w-full max-w-[320px] sm:max-w-[440px] h-[320px] sm:h-[440px] max-h-[52vh] origin-center">
               <Lanyard
                 position={[0, 0, 12]}
                 gravity={[0, -40, 0]}

@@ -33,6 +33,17 @@ export function AmbientMusic() {
   const reduce = useReducedMotion();
   const playControls = useAnimationControls();
 
+  // Tutup panel otomatis saat user scroll jauh supaya tidak menutupi
+  // konten / form kontak di mobile.
+  useEffect(() => {
+    if (!showPanel) return;
+    const onScroll = () => {
+      if (window.scrollY > window.innerHeight * 1.5) setShowPanel(false);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [showPanel]);
+
   // Rasa clingy/kenyal di tombol play: ikon memantul squash-and-stretch.
   // Dijalankan manual via controls (bukan keyframe di whileTap) supaya tidak
   // berebut transform dengan animasi scale tombolnya.
@@ -117,7 +128,7 @@ export function AmbientMusic() {
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-50">
+    <div className="fixed z-40 bottom-20 left-4 sm:bottom-6 sm:left-6 sm:z-50">
       <audio
         ref={audioRef}
         src={tracks[currentTrack].url}
@@ -134,7 +145,7 @@ export function AmbientMusic() {
             exit={{ opacity: 0, y: 12, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 500, damping: 24 }}
             className={cn(
-              "absolute bottom-full mb-4 left-0 w-64 rounded-2xl p-4 border shadow-[0_20px_40px_rgba(0,0,0,0.3)]",
+              "absolute bottom-full mb-3 left-0 w-[min(16rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] rounded-2xl p-4 border shadow-[0_20px_40px_rgba(0,0,0,0.3)]",
               isDark ? "bg-neutral-900 border-white/10" : "bg-white border-neutral-300"
             )}
           >
@@ -238,7 +249,7 @@ export function AmbientMusic() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Volume2 className={cn("w-4 h-4", isDark ? "text-neutral-400" : "text-neutral-600")} />
+              <Volume2 className={cn("w-4 h-4 shrink-0", isDark ? "text-neutral-400" : "text-neutral-600")} />
               <input
                 type="range"
                 min="0"
@@ -246,7 +257,7 @@ export function AmbientMusic() {
                 step="0.01"
                 value={volume}
                 onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="flex-1 h-1.5 cursor-pointer"
+                className="flex-1 h-1.5 cursor-pointer min-w-0"
               />
             </div>
           </motion.div>
@@ -260,7 +271,7 @@ export function AmbientMusic() {
         whileHover={{ scale: 1.08 }}
         transition={{ type: "spring", stiffness: 500, damping: 17 }}
         className={cn(
-          "w-12 h-12 grid place-items-center rounded-xl border",
+          "w-12 h-12 grid place-items-center rounded-xl border shadow-lg",
           isDark
             ? "bg-neutral-900 border-white/10 text-neutral-300 hover:bg-neutral-800"
             : "bg-white border-neutral-300 text-neutral-700 hover:bg-neutral-100"

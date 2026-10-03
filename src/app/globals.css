@@ -96,6 +96,7 @@
     scroll-padding-top: var(--scroll-offset);
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
+    overflow-x: clip;
   }
 
   body {
@@ -106,7 +107,37 @@
     background-image:
       radial-gradient(circle at 20% 50%, hsla(0, 0%, 70%, 0.04) 0%, transparent 25%),
       radial-gradient(circle at 80% 80%, hsla(0, 0%, 80%, 0.03) 0%, transparent 30%);
-    overflow-x: hidden;
+    overflow-x: clip;
+    /* cegah scroll horizontal dari shadow/skew/marquee di layar kecil */
+    max-width: 100vw;
+  }
+
+  /* ── MOBILE FIX: canvas lanyard jangan blokir scroll vertikal ── */
+  .lanyard-wrapper {
+    touch-action: pan-y;
+    overflow: hidden;
+    max-width: 100%;
+  }
+  .lanyard-wrapper canvas {
+    touch-action: pan-y !important;
+  }
+
+  /* ── MOBILE FIX: cegah iOS auto-zoom (input < 16px memicu zoom) ── */
+  @media (max-width: 640px) {
+    input, textarea, select {
+      font-size: 16px !important;
+    }
+  }
+
+  /* ── MOBILE FIX: safe-area untuk tombol fixed bawah ── */
+  .fixed-bottom-safe {
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  }
+  .fixed-left-safe {
+    left: calc(1rem + env(safe-area-inset-left, 0px));
+  }
+  .fixed-right-safe {
+    right: calc(1rem + env(safe-area-inset-right, 0px));
   }
 
   /* Hide scrollbar for mobile scroll containers */

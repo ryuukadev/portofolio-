@@ -118,7 +118,6 @@ export type Dictionary = {
     less: string;
     more: string;
     loading: string;
-    preview: string;
     syncing: string;
   };
   showcase: {
@@ -280,7 +279,6 @@ export const dictionaries: Record<Lang, Dictionary> = {
       less: "Sedikit",
       more: "Banyak",
       loading: "Memuat grafik kontribusi…",
-      preview: "Pratinjau",
       syncing: "Menyinkronkan…",
     },
     showcase: {
@@ -440,7 +438,6 @@ export const dictionaries: Record<Lang, Dictionary> = {
       less: "Less",
       more: "More",
       loading: "Loading contributions graph…",
-      preview: "Preview",
       syncing: "Syncing…",
     },
     showcase: {

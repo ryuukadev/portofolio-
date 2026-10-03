@@ -27,11 +27,12 @@ type ContribRaw = {
   intensity?: unknown;
 };
 
-type Status = "loading" | "live" | "preview";
+type Status = "loading" | "live" | "error";
 
 const CACHE_KEY = `gh-contrib-${githubUsername}`;
 const CACHE_TTL = 6 * 3600 * 1000; // 6 jam — kunjungan ulang langsung instan
-const FETCH_TIMEOUT = 4000;
+const FETCH_TIMEOUT = 5000;
+  const MAX_RETRIES = 2;
 
 function levelFromCount(count: number, max: number): Day["level"] {
   if (count <= 0) return 0;
@@ -43,28 +44,9 @@ function levelFromCount(count: number, max: number): Day["level"] {
   return 4;
 }
 
-// Fallback deterministik — langsung tampil di paint pertama,
-// lalu diganti data asli saat fetch selesai (tanpa kedip kasar)
-function seededFallback(): Day[] {
-  const days: Day[] = [];
-  const today = new Date();
-  let seed = githubUsername.split("").reduce((a, c) => a + c.charCodeAt(0), 7);
-  const rand = () => {
-    seed = (seed * 9301 + 49297) % 233280;
-    return seed / 233280;
-  };
-  for (let i = 364; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    const weekend = d.getDay() === 0 || d.getDay() === 6;
-    const r = rand();
-    const count =
-      r > 0.72 ? Math.floor(r * 12) : weekend && r > 0.5 ? Math.floor(r * 4) : 0;
-    days.push({ date: d.toISOString().slice(0, 10), count, level: 0 });
-  }
-  const max = Math.max(...days.map((x) => x.count), 1);
-  return days.map((x) => ({ ...x, level: levelFromCount(x.count, max) }));
-}
+// ── REAL DATA ONLY: tidak ada fallback/pola acak. Sebelum fetch
+// selesai, tampilkan skeleton kosong. Kalau fetch gagal, tampilkan
+// state error yang jujur (bukan angka karangan). ──
 
 function cellClass(isDark: boolean, level: Day["level"]) {
   if (isDark) {
@@ -121,23 +103,23 @@ const HeatCell = memo(function HeatCell({
   onHover: (d: Day | null) => void;
 }) {
   return (
-    <div
-      onMouseEnter={() => onHover(day)}
-      onMouseLeave={() => onHover(null)}
-      onFocus={() => onHover(day)}
-      onBlur={() => onHover(null)}
-      tabIndex={0}
-      role="img"
-      aria-label={`${day.count} ${labelOnDate} ${fmtDate(day.date)}`}
-      title={`${day.count} · ${fmtDate(day.date)}`}
-      style={playWave ? { animationDelay: animDelay } : undefined}
-      className={cn(
-        playWave ? "gh-cell" : revealed ? "" : "opacity-0",
-        "h-[11px] w-[11px] sm:h-[12px] sm:w-[12px] rounded-[3.5px] cursor-pointer outline-none transition-[transform,background-color,box-shadow] duration-200 ease-out hover:scale-[1.45] hover:z-10 hover:ring-1 focus-visible:scale-[1.45] focus-visible:ring-1",
-        cellClass(isDark, day.level),
-        isDark ? "hover:ring-white focus-visible:ring-white" : "hover:ring-black focus-visible:ring-black"
-      )}
-    />
+<div
+       onMouseEnter={() => onHover(day)}
+       onMouseLeave={() => onHover(null)}
+       onFocus={() => onHover(day)}
+       onBlur={() => onHover(null)}
+       tabIndex={0}
+       role="img"
+       aria-label={`${day.count} ${labelOnDate} ${fmtDate(day.date)}`}
+       title={`${day.count} · ${fmtDate(day.date)}`}
+       style={playWave ? { animationDelay: animDelay } : undefined}
+       className={cn(
+         playWave ? "gh-cell" : revealed ? "" : "opacity-0",
+         "h-[9px] w-[9px] sm:h-[11px] sm:w-[11px] rounded-[2.5px] sm:rounded-[3.5px] cursor-pointer outline-none transition-[transform,background-color,box-shadow] duration-200 ease-out hover:scale-[1.45] hover:z-10 hover:ring-1 focus-visible:scale-[1.45] focus-visible:ring-1",
+         cellClass(isDark, day.level),
+         isDark ? "hover:ring-white focus-visible:ring-white" : "hover:ring-black focus-visible:ring-black"
+       )}
+     />
   );
 });
 function useCountUp(target: number, start: boolean, duration = 900) {
@@ -189,8 +171,8 @@ export function GitHubStats() {
   const { resolvedTheme } = useTheme();
   const { t, lang } = useLanguage();
   const [mounted, setMounted] = useState(false);
-  // Paint pertama: baca cache SYNC saat render (bukan di effect) supaya tidak
-  // ada frame "fallback → data asli" yang bikin heatmap kelihatan berubah kasar
+  // REAL DATA ONLY: mulai kosong → skeleton. Cache valid langsung dipakai,
+  // kalau tidak ada cache + fetch gagal → status "error" (jujur, bukan angka palsu).
   const [days, setDays] = useState<Day[]>(() => {
     try {
       const raw = localStorage.getItem(CACHE_KEY);
@@ -207,7 +189,7 @@ export function GitHubStats() {
     } catch {
       /* abaikan */
     }
-    return seededFallback();
+    return [];
   });
   // Kalau paint pertama sudah dari cache → langsung "live", tidak lewat "loading"
   const [status, setStatus] = useState<Status>(() => {
@@ -280,22 +262,68 @@ export function GitHubStats() {
     //    berebut thread dengan paint awal (ini yang bikin "stuck" pas masuk).
     //    Hasilnya di-diff: hanya setState kalau data benar-benar beda, jadi
     //    heatmap tidak "berubah kasar" kalau datanya sama.
+    const fetchWithFallback = async (signal: AbortSignal): Promise<ContribRaw[] | null> => {
+      const endpoints = [
+        `https://github-contributions-api.jogruber.de/v4/${githubUsername}?y=last`,
+        `https://api.github.com/users/${githubUsername}/events?per_page=100`,
+      ];
+      
+      for (const url of endpoints) {
+        for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+          try {
+            const res = await fetch(url, { signal });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            
+            const json: unknown = await res.json();
+            
+            // Parse berdasarkan endpoint
+            if (url.includes("jogruber")) {
+              const raw: ContribRaw[] = Array.isArray(
+                (json as { contributions?: unknown })?.contributions
+              )
+                ? (json as { contributions: ContribRaw[] }).contributions
+                : Array.isArray(json)
+                  ? (json as ContribRaw[])
+                  : [];
+              if (raw.length > 0) return raw;
+            } else if (url.includes("api.github.com")) {
+              // Fallback: hitung dari events
+              const events = json as Array<{ type?: string; created_at?: string }>;
+              if (Array.isArray(events) && events.length > 0) {
+                const contribMap = new Map<string, number>();
+                events.forEach((e) => {
+                  if (e.type && e.created_at && e.type !== "WatchEvent") {
+                    const date = e.created_at.slice(0, 10);
+                    contribMap.set(date, (contribMap.get(date) || 0) + 1);
+                  }
+                });
+                if (contribMap.size > 0) {
+                  return Array.from(contribMap.entries()).map(([date, count]) => ({
+                    date,
+                    count,
+                    level: count >= 4 ? 4 : count >= 2 ? 3 : count >= 1 ? 2 : 0,
+                  }));
+                }
+              }
+            }
+          } catch (err) {
+            if (attempt < MAX_RETRIES) {
+              await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+              continue;
+            }
+          }
+        }
+      }
+      return null;
+    };
+
     const runFetch = async () => {
       try {
-        const res = await fetch(
-          `https://github-contributions-api.jogruber.de/v4/${githubUsername}?y=last`,
-          { signal: ctrl.signal }
-        );
-        if (!res.ok) throw new Error("bad status");
-        const json: unknown = await res.json();
-        const raw: ContribRaw[] = Array.isArray(
-          (json as { contributions?: unknown })?.contributions
-        )
-          ? (json as { contributions: ContribRaw[] }).contributions
-          : Array.isArray(json)
-            ? (json as ContribRaw[])
-            : [];
-        if (!raw.length) throw new Error("empty");
+        const raw = await fetchWithFallback(ctrl.signal);
+        if (!raw || !raw.length) {
+          if (!cancelled) setStatus(hasReal.current ? "live" : "error");
+          return;
+        }
         const max = Math.max(
           ...raw.map((d) => Number(d.count ?? d.contributionCount ?? 0)),
           1
@@ -310,8 +338,6 @@ export function GitHubStats() {
           };
         });
         if (!cancelled) {
-          // Diff ringan: kalau identik dengan yang tampil, jangan setState
-          // (menghindari 371 re-render + angka count-up ngulang dari 0)
           setDays((prev) => {
             if (
               prev.length === parsed.length &&
@@ -331,7 +357,7 @@ export function GitHubStats() {
           }
         }
       } catch {
-        if (!cancelled) setStatus(hasReal.current ? "live" : "preview");
+        if (!cancelled) setStatus(hasReal.current ? "live" : "error");
       } finally {
         clearTimeout(timer);
       }
@@ -539,11 +565,11 @@ export function GitHubStats() {
           <img
             src={profile.avatar}
             alt={`@${githubUsername}`}
-            width={44}
-            height={44}
+            width={40}
+            height={40}
             loading="lazy"
             draggable={false}
-            className="w-11 h-11 rounded-full object-cover ring-2 ring-white/20"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover ring-2 ring-white/20 shrink-0"
           />
           <div className="min-w-0 flex-1">
             <p
@@ -559,7 +585,7 @@ export function GitHubStats() {
             </p>
             <div
               className={cn(
-                "mt-1.5 flex items-center gap-3 text-[11px] font-bold tabular-nums",
+                "mt-1.5 flex flex-wrap items-center gap-2 text-[11px] font-bold tabular-nums",
                 isDark ? "text-white/60" : "text-neutral-500"
               )}
             >
@@ -578,18 +604,18 @@ export function GitHubStats() {
         </a>
       ) : null}
 
-      <div className="relative p-5 sm:p-6">
+      <div className="relative p-4 sm:p-5 lg:p-6">
         {/* Header */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="relative">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="relative shrink-0">
               <div
                 className={cn(
-                  "p-2.5 rounded-xl border",
+                  "p-2 sm:p-2.5 rounded-xl border",
                   isDark ? "bg-white text-black border-white" : "bg-black text-white border-black"
                 )}
               >
-                <Github className="w-5 h-5" />
+                <Github className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <span className="absolute -top-1 -right-1 flex h-3 w-3">
                 {status === "loading" ? (
@@ -598,15 +624,15 @@ export function GitHubStats() {
                 <span
                   className={cn(
                     "relative inline-flex rounded-full h-3 w-3 border-2 border-white dark:border-neutral-900",
-                    status === "preview" ? "bg-amber-400" : "bg-emerald-500"
+                    status === "error" ? "bg-red-500" : "bg-emerald-500"
                   )}
                 />
               </span>
             </div>
-            <div>
+            <div className="min-w-0">
               <h3
                 className={cn(
-                  "font-black text-[15px] tracking-tight leading-none",
+                  "font-black text-[14px] sm:text-[15px] tracking-tight leading-none truncate",
                   isDark ? "text-white" : "text-neutral-900"
                 )}
               >
@@ -615,28 +641,22 @@ export function GitHubStats() {
               {status === "loading" ? (
                 <p
                   className={cn(
-                    "mt-1 flex items-center gap-1 text-[11px] font-medium",
+                    "mt-1 flex items-center gap-1 text-[10px] sm:text-[11px] font-medium",
                     isDark ? "text-white/50" : "text-neutral-500"
                   )}
                 >
                   <Loader2 className="w-3 h-3 animate-spin" />
                   {t.github.syncing}
                 </p>
+              ) : status === "error" ? (
+                <p className={cn("mt-1 text-[10px] sm:text-[11px] font-medium", isDark ? "text-red-400" : "text-red-600")}>
+                  {t.github.loadError}
+                </p>
               ) : (
-                <p className={cn("mt-1 text-[11px] font-medium", isDark ? "text-white/50" : "text-neutral-500")}>
+                <p className={cn("mt-1 text-[10px] sm:text-[11px] font-medium", isDark ? "text-white/50" : "text-neutral-500")}>
                   {t.github.contributions} · {t.github.lastYear}
                 </p>
               )}
-              {status === "preview" ? (
-                <p
-                  className={cn(
-                    "mt-1 inline-block rounded-md px-1.5 py-0.5 text-[10px] font-black tracking-[0.12em] uppercase",
-                    isDark ? "bg-amber-400/15 text-amber-300" : "bg-amber-100 text-amber-700"
-                  )}
-                >
-                  {t.github.preview}
-                </p>
-              ) : null}
             </div>
           </div>
           <a
@@ -645,28 +665,29 @@ export function GitHubStats() {
             rel="noopener noreferrer"
             aria-label={`${t.github.viewProfile} @${githubUsername}`}
             className={cn(
-              "group inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-black tracking-wider transition-all duration-200 ease-out hover:-translate-y-0.5",
+              "group inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-[10px] sm:text-[11px] font-black tracking-wider transition-all duration-200 ease-out hover:-translate-y-0.5 shrink-0",
               isDark
                 ? "bg-white text-black hover:shadow-[0_8px_24px_rgba(255,255,255,0.25)]"
                 : "bg-black text-white hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
             )}
           >
             {t.github.profile}
-            <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
         </div>
 
-        {/* Stat cards */}
-        <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          {statCards.map((s, i) => (
-            <motion.div
+        {/* Stat cards — skeleton saat loading/error, angka asli saat live */}
+        {days.length > 0 ? (
+          <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
+            {statCards.map((s, i) => (
+              <motion.div
               key={s.label}
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ ...springConfig, delay: 0.15 + i * 0.06 }}
               className={cn(
-                "rounded-xl border px-3 py-2.5 transition-all duration-200 ease-out hover:-translate-y-0.5",
+                "rounded-xl border px-2.5 sm:px-3 py-2 sm:py-2.5 transition-all duration-200 ease-out hover:-translate-y-0.5",
                 isDark
                   ? "border-white/10 bg-white/[0.04] hover:bg-white/[0.07]"
                   : "border-neutral-200 bg-neutral-50 hover:bg-neutral-100"
@@ -683,18 +704,35 @@ export function GitHubStats() {
               </div>
               <div
                 className={cn(
-                  "mt-0.5 font-black text-[20px] leading-none tracking-tight tabular-nums",
+                  "mt-0.5 font-black text-[18px] sm:text-[20px] leading-none tracking-tight tabular-nums",
                   isDark ? "text-white" : "text-neutral-900"
                 )}
               >
                 {s.value}
-                {s.hot ? <span className="ml-1 text-[14px]">🔥</span> : null}
+                {s.hot ? <span className="ml-1 text-[13px] sm:text-[14px]">🔥</span> : null}
               </div>
-            </motion.div>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+        /* Skeleton jujur — tidak menampilkan angka karangan saat data belum ada */
+        <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5" aria-hidden>
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className={cn(
+                "rounded-xl border px-2.5 sm:px-3 py-2 sm:py-2.5 animate-pulse",
+                isDark ? "border-white/10 bg-white/[0.04]" : "border-neutral-200 bg-neutral-50"
+              )}
+            >
+              <div className={cn("h-3 w-2/3 rounded", isDark ? "bg-white/10" : "bg-neutral-200")} />
+              <div className={cn("mt-2 h-5 sm:h-6 w-1/2 rounded", isDark ? "bg-white/10" : "bg-neutral-200")} />
+            </div>
           ))}
         </div>
+        )}
 
-        {/* Heatmap — selalu ada isi sejak paint pertama */}
+        {/* Heatmap — data asli; skeleton / pesan error kalau belum ada data */}
         <div
           className={cn(
             "relative mt-4 rounded-xl border p-3 sm:p-4",
@@ -713,59 +751,75 @@ export function GitHubStats() {
             </div>
           ) : null}
 
-          {/* label bulan */}
-          <div className="overflow-x-auto pb-1">
-            <div className="min-w-[760px] relative ml-[26px]">
-              {monthLabels.map((m) => (
-                <span
-                  key={`${m.weekIdx}-${m.label}`}
-                  style={{ left: m.weekIdx * 15 }}
-                  className={cn(
-                    "absolute top-0 text-[10px] font-bold capitalize",
-                    isDark ? "text-white/40" : "text-neutral-400"
-                  )}
-                >
-                  {m.label}
-                </span>
-              ))}
-              <div className="h-4" />
-            </div>
-          </div>
+          {days.length === 0 ? (
+            status === "error" ? (
+              <p className={cn("py-8 text-center text-[13px] font-semibold", isDark ? "text-white/50" : "text-neutral-500")}>
+                {t.github.loadError} — <a href={`https://github.com/${githubUsername}`} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{t.github.viewProfile}</a>
+              </p>
+            ) : (
+              <div className="grid grid-cols-[repeat(26,minmax(0,1fr))] gap-[2px] sm:gap-[3px] animate-pulse" aria-hidden>
+                {Array.from({ length: 26 * 7 }).map((_, i) => (
+                  <div key={i} className={cn("h-[9px] sm:h-[11px] w-full rounded-[2.5px] sm:rounded-[3.5px]", isDark ? "bg-white/10" : "bg-neutral-200")} />
+                ))}
+              </div>
+            )
+          ) : (
+            <>
+              {/* label bulan + grid dalam SATU scroll container supaya sejajar di mobile */}
+          <div className="overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+            <div className="min-w-[560px] sm:min-w-[640px]">
+              <div className="relative ml-[20px] sm:ml-[24px]">
+                {monthLabels.map((m) => (
+                  <span
+                    key={`${m.weekIdx}-${m.label}`}
+                    style={{ left: m.weekIdx * 12 }}
+                    className={cn(
+                      "absolute top-0 text-[9px] sm:text-[10px] font-bold capitalize",
+                      isDark ? "text-white/40" : "text-neutral-400"
+                    )}
+                  >
+                    {m.label}
+                  </span>
+                ))}
+                <div className="h-3 sm:h-4" />
+              </div>
 
-          <div ref={gridRef} className="flex gap-1 overflow-x-auto pb-1">
-            {/* label hari */}
-            <div className="flex flex-col gap-[3px] mr-1 shrink-0 pt-0">
-              {["", "Mon", "", "Wed", "", "Fri", ""].map((d, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "h-[11px] sm:h-[12px] text-[9px] font-bold leading-[11px] w-[22px]",
-                    isDark ? "text-white/30" : "text-neutral-400"
-                  )}
-                >
-                  {d}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-[3px] min-w-[720px]">
-              {weeks.map((week, wi) => (
-                <div key={wi} className="flex flex-col gap-[3px]">
-                  {week.map((day, di) => (
-                    <HeatCell
-                      key={`${day.date}-${di}`}
-                      day={day}
-                      isDark={isDark}
-                      labelOnDate={t.github.onDate}
-                      fmtDate={fmtDate}
-                      playWave={playWave}
-                      revealed={revealed}
-                      animDelay={`${Math.min(wi * 14 + di * 6, 650)}ms`}
-                      onHover={handleCellHover}
-                    />
+              <div ref={gridRef} className="flex gap-0.5 sm:gap-1">
+                {/* label hari */}
+                <div className="flex flex-col gap-[2px] sm:gap-[3px] mr-1 shrink-0 pt-0">
+                  {["", "Mon", "", "Wed", "", "Fri", ""].map((d, i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        "h-[9px] sm:h-[11px] text-[8px] sm:text-[9px] font-bold leading-[9px] sm:leading-[11px] w-[18px] sm:w-[22px]",
+                        isDark ? "text-white/30" : "text-neutral-400"
+                      )}
+                    >
+                      {d}
+                    </div>
                   ))}
                 </div>
-              ))}
+
+                <div className="flex gap-[2px] sm:gap-[3px]">
+                  {weeks.map((week, wi) => (
+                    <div key={wi} className="flex flex-col gap-[2px] sm:gap-[3px]">
+                      {week.map((day, di) => (
+                        <HeatCell
+                          key={`${day.date}-${di}`}
+                          day={day}
+                          isDark={isDark}
+                          labelOnDate={t.github.onDate}
+                          fmtDate={fmtDate}
+                          playWave={playWave}
+                          revealed={revealed}
+                          animDelay={`${Math.min(wi * 14 + di * 6, 650)}ms`}
+                          onHover={handleCellHover}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -798,6 +852,8 @@ export function GitHubStats() {
               </span>
             </div>
           </div>
+            </>
+          )}
         </div>
       </div>
     </motion.div>

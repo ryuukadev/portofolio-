@@ -46,7 +46,7 @@ export function BackToTop() {
       <button
         onClick={handleRestore}
         className={cn(
-          "fixed bottom-6 right-6 z-50 w-11 h-11 grid place-items-center rounded-full border backdrop-blur transition-all",
+          "fixed z-40 bottom-20 right-4 sm:bottom-6 sm:right-6 w-11 h-11 grid place-items-center rounded-full border backdrop-blur transition-all",
           isDark
             ? "bg-white/5 border-white/10 text-neutral-400 hover:text-white hover:bg-white/10"
             : "bg-white border-neutral-300 text-neutral-500 hover:text-neutral-800 hover:bg-neutral-100 shadow-sm"
@@ -67,7 +67,7 @@ export function BackToTop() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.9 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-1.5"
+          className="fixed z-40 bottom-20 right-4 sm:bottom-6 sm:right-6 flex items-center gap-1.5"
         >
           <motion.a
             href="#beranda"

@@ -24,7 +24,7 @@ export function ContactDockKeyboard() {
 
   return (
     <motion.div
-      className="relative flex justify-center items-center my-8 sm:my-12"
+      className="relative flex justify-start sm:justify-center items-center my-8 sm:my-12 -mx-1 px-1 overflow-x-auto scrollbar-hide"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -33,7 +33,7 @@ export function ContactDockKeyboard() {
       {/* Dock Container */}
       <div
         className={cn(
-          "relative flex items-center gap-2 px-4 py-2 border rounded-[18px] shadow-[0_20px_40px_rgba(0,0,0,0.4)]",
+          "relative flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 border rounded-[18px] shadow-[0_20px_40px_rgba(0,0,0,0.4)] w-fit max-w-full",
           isDark
             ? "bg-gradient-to-b from-neutral-800 to-neutral-900 border-white/10"
             : "bg-gradient-to-b from-neutral-200 to-neutral-100 border-neutral-300"
@@ -42,7 +42,7 @@ export function ContactDockKeyboard() {
         {/* Left "C" */}
         <motion.div
           className={cn(
-            "flex items-center justify-center h-16 sm:h-[4.5rem] px-5 sm:px-6 rounded-xl font-black text-lg sm:text-xl shadow-inner",
+            "hidden min-[380px]:flex items-center justify-center h-16 sm:h-[4.5rem] px-5 sm:px-6 rounded-xl font-black text-lg sm:text-xl shadow-inner shrink-0",
             isDark
               ? "bg-neutral-200 text-neutral-950"
               : "bg-neutral-300 text-neutral-900"
@@ -53,7 +53,7 @@ export function ContactDockKeyboard() {
         </motion.div>
 
         {/* Socials */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {socials.map((social) => (
             <motion.a
               key={social.name}
@@ -63,7 +63,7 @@ export function ContactDockKeyboard() {
               aria-label={social.name}
               title={social.name}
               onClick={(e) => handleSmartClick(e, social.href)}
-              className="relative flex items-center justify-center w-14 h-12 sm:w-20 sm:h-16"
+              className="relative flex items-center justify-center w-12 h-12 sm:w-20 sm:h-16"
               whileHover={{ scale: 1.08, y: -4 }}
               whileTap={{ scale: 0.82, rotate: -4 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
@@ -105,7 +105,7 @@ export function ContactDockKeyboard() {
         {/* Right "T" */}
         <motion.div
           className={cn(
-            "flex items-center justify-center h-16 sm:h-[4.5rem] px-5 sm:px-6 rounded-xl font-black text-lg sm:text-xl shadow-inner",
+            "hidden min-[380px]:flex items-center justify-center h-16 sm:h-[4.5rem] px-5 sm:px-6 rounded-xl font-black text-lg sm:text-xl shadow-inner shrink-0",
             isDark
               ? "bg-neutral-200 text-neutral-950"
               : "bg-neutral-300 text-neutral-900"

@@ -24,7 +24,7 @@ export function About() {
   const isDark = mounted ? resolvedTheme === "dark" : true;
 
   return (
-    <section id="tentang" className="py-10 sm:py-16">
+    <section id="tentang" className="py-10 sm:py-16 overflow-clip">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section head — minimal, tanpa badge box */}
         <div className="flex items-center gap-3 mb-8">
@@ -44,7 +44,7 @@ export function About() {
           >
             <GlassCard className="p-0 overflow-hidden">
               <div className={cn("h-[8px]", isDark ? "bg-white" : "bg-neutral-900")} />
-              <div className="p-7">
+              <div className="p-5 sm:p-7">
                 {/* foto profile — pure black/white aesthetic */}
                 <div className="relative">
                   <div

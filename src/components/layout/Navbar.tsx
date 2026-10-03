@@ -124,7 +124,7 @@ export function Navbar() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-              className={cn("md:hidden overflow-hidden border-t", isDark ? "border-white/10" : "border-neutral-300")}
+              className={cn("md:hidden overflow-hidden overflow-y-auto max-h-[calc(100dvh-64px)] border-t", isDark ? "border-white/10" : "border-neutral-300")}
             >
               <div className="py-3">
                 {t.nav.links.map((l) => (

@@ -107,7 +107,7 @@ export function Contact() {
   };
 
   return (
-    <section id="kontak" className="py-10 sm:py-16">
+    <section id="kontak" className="py-10 sm:py-16 overflow-clip">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3 mb-8">
           <span className={cn("h-px w-8", isDark ? "bg-white/15" : "bg-black/10")} />
@@ -161,7 +161,7 @@ export function Contact() {
           </div>
 
           {/* Form */}
-          <GlassCard className="p-6 sm:p-7">
+          <GlassCard className="p-5 sm:p-7">
             <AnimatePresence mode="wait">
               {isSent ? (
                 <motion.div

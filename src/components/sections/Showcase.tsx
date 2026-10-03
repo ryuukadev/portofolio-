@@ -115,7 +115,7 @@ export function Showcase() {
   ];
 
   return (
-    <section id="karya" className={cn("py-10 sm:py-16 scroll-mt-[80px]", isDark ? "bg-[#09090b] sm:bg-transparent" : "bg-[#fafafa] sm:bg-transparent")}>
+    <section id="karya" className={cn("py-10 sm:py-16 scroll-mt-[80px] overflow-clip", isDark ? "bg-[#09090b] sm:bg-transparent" : "bg-[#fafafa] sm:bg-transparent")}>
       {/* anchor compat */}
       <span id="proyek" className="block h-0 scroll-mt-[80px]" aria-hidden />
       <span id="sertifikat" className="block h-0 scroll-mt-[80px]" aria-hidden />
@@ -130,7 +130,7 @@ export function Showcase() {
         </div>
 
         {/* Tab bar — pil + sliding indicator */}
-        <div className={cn("flex items-center gap-1.5 p-1.5 rounded-2xl border w-fit max-w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory", isDark ? "bg-white/[0.04] border-white/10" : "bg-white border-zinc-200 shadow-sm")}>
+        <div className={cn("flex items-center gap-1.5 p-1.5 rounded-2xl border w-fit max-w-[100%] overflow-x-auto scrollbar-hide snap-x snap-proximity", isDark ? "bg-white/[0.04] border-white/10" : "bg-white border-zinc-200 shadow-sm")}>
           {tabs.map((tb) => {
             const active = tab === tb.id;
             return (
